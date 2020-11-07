@@ -12,7 +12,6 @@ import logging
 slackLogger = logging.getLogger("slack")
 emailLogger = logging.getLogger("email")
 
-logging.basicConfig(level=logging.INFOs)
 
 class NotifierInterface(metaclass=abc.ABCMeta):
 
