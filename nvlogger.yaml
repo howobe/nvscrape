@@ -10,7 +10,7 @@ handlers:
         stream: ext://sys.stdout
     file:
         class: logging.FileHandler
-        level: INFO
+        level: DEBUG
         formatter: simple
         filename: "nv.log"
 loggers:
