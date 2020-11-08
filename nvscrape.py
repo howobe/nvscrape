@@ -20,7 +20,7 @@ mainlog = logging.getLogger("main")
 
 
 def htmlRequest(url: str) -> requests_html.HTMLResponse:
-    nvlog.debug("Starting session...")
+    nvlog.debug("Starting requests session...")
     session = requests_html.HTMLSession()
     nvlog.info(f"Making GET request: url={url}")
     response = session.get(url)
@@ -76,18 +76,18 @@ def getValues(dictionary: dict, *args) -> list:
             continue
     return res
 
-
+mainlog.info("nvscrape starting...")
 r = htmlRequest("https://www.nvidia.com/en-gb/shop/geforce/gpu/?page=1" +
                 "&limit=9&locale=en-gb&category=GPU&gpu=RTX%203070")
 soup = parse(r)
 rtx3070info = itemJson(getDiv(soup, "NVGFT070"))
-if rtx3070info is not None:
+mainlog.info(f"Length of item(s) JSON: {len(rtx3070info)}")
+if rtx3070info:
     mainlog.info("Field no longer empty")
     if not isinstance(rtx3070info, list):
         rtx3070info = [rtx3070info]
     links = []
     for dic in rtx3070info:
-        print(dic)
         links.extend(getValues(dic, "directPurchaseLink", "purchaseLink"))
     linksStr = ", ".join([link for link in links if link])
     sl = SlackNotification(os.environ["SLACK_API_TOKEN"])
