@@ -1,0 +1,1 @@
+*/1 * * * * /usr/bin/python /path/to/script/nvscrape.py
