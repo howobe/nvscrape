@@ -60,10 +60,9 @@ def getDivs(parsedResponse: BeautifulSoup, className: str = None) -> list:
 
 def itemJson(div: bs4Tag):
     try:
-        json.loads(div.text)
+        return json.loads(div.text)
     except json.JSONDecodeError as e:
         nvlog.exception(e)
-
 
 def getValues(dictionary: dict, *args) -> list:
     res = []
@@ -87,8 +86,9 @@ if rtx3070info is not None:
         rtx3070info = [rtx3070info]
     links = []
     for dic in rtx3070info:
+        print(dic)
         links.extend(getValues(dic, "directPurchaseLink", "purchaseLink"))
-    linksStr = ", ".join(links)
+    linksStr = ", ".join([link for link in links if link])
     sl = SlackNotification(os.environ["SLACK_API_TOKEN"])
     sl.setBody(f"Change detected!\nTry these links: {linksStr}\nBonus: " +
                "https://secure.scan.co.uk/web/basket/addproduct/3236417")
