@@ -39,7 +39,7 @@ def parse(responseStr: str, parser: str = 'lxml') -> BeautifulSoup:
 
 
 def getDiv(parsedResponse: BeautifulSoup, className: str = None):
-    nvlog.debug(f"getDiv called: className={className}")
+    nvlog.info(f"getDiv called: className={className}")
     if className is not None:
         div = parsedResponse.find("div", {"class": className})
     else:
@@ -49,7 +49,7 @@ def getDiv(parsedResponse: BeautifulSoup, className: str = None):
 
 
 def getDivs(parsedResponse: BeautifulSoup, className: str = None) -> list:
-    nvlog.debug(f"getDivs called: className={className}")
+    nvlog.info(f"getDivs called: className={className}")
     if className is not None:
         divs = parsedResponse.find_all("div", {"class": className})
     else:
@@ -60,6 +60,7 @@ def getDivs(parsedResponse: BeautifulSoup, className: str = None) -> list:
 
 def itemJson(div: bs4Tag):
     try:
+        nvlog.info("Attempting to parse div text as JSON...")
         return json.loads(div.text)
     except json.JSONDecodeError as e:
         nvlog.exception(e)
