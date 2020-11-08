@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import requests_html
 from bs4 import BeautifulSoup
 from bs4.element import Tag as bs4Tag
