@@ -9,10 +9,12 @@ handlers:
         formatter: simple
         stream: ext://sys.stdout
     file:
-        class: logging.FileHandler
+        class: logging.handlers.TimedRotatingFileHandler
         level: DEBUG
         formatter: simple
-        filename: "nv.log"
+        filename: "nvtimedrotating.log"
+        when: "midnight"
+        backupCount: 3
 loggers:
     nv:
         level: DEBUG
