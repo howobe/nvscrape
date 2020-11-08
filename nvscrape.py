@@ -28,13 +28,13 @@ def htmlRequest(url: str) -> requests_html.HTMLResponse:
     nvlog.debug("Rendering dynamic content...")
     response.html.render()
     nvlog.info("Rendered dynamic content")
-    nvlog.debug("Closing session...")
     session.close()
+    nvlog.debug("Session closed")
     return response.html.raw_html
 
 
 def parse(responseStr: str, parser: str = 'lxml') -> BeautifulSoup:
-    nvlog.info(f"Parsing response: parser: {parser}")
+    nvlog.info(f"Parsing response: parser={parser}")
     return BeautifulSoup(responseStr, parser)
 
 
