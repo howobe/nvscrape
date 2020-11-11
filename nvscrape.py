@@ -8,7 +8,6 @@ import yaml
 from notify import SlackNotification
 import os
 
-
 with open('nvlogger.yaml', 'r') as f:
     config = yaml.safe_load(f.read())
     logconfig.dictConfig(config)
@@ -25,7 +24,7 @@ def htmlRequest(url: str) -> requests_html.HTMLResponse:
     nvlog.info(f"Response received ({response.status_code})")
     nvlog.debug("Rendering dynamic content...")
     response.html.render()
-    nvlog.info("Rendered dynamic content")
+    nvlog.debug("Rendered dynamic content")
     session.close()
     nvlog.debug("Session closed")
     return response.html.raw_html
@@ -58,7 +57,7 @@ def getDivs(parsedResponse: BeautifulSoup, className: str = None) -> list:
 
 def itemJson(div: bs4Tag):
     try:
-        nvlog.info("Attempting to parse div text as JSON...")
+        nvlog.debug("Attempting to parse div text as JSON...")
         return json.loads(div.text)
     except json.JSONDecodeError as e:
         nvlog.exception(e)
@@ -74,14 +73,35 @@ def getValues(dictionary: dict, *args) -> list:
             continue
     return res
 
+
+def saveJson(filename: str, jsonDict: dict):
+    with open(filename, 'w') as f:
+        json.dump(jsonDict, f, indent=4)
+
+
+def isMatch(filename: str, jsonDict: dict):
+    with open(filename, 'r') as f:
+        fileDict = json.load(f)
+    if jsonDict == fileDict:
+        return True
+    return False
+
+filename = "data.json"
+classname = "NVGFT070" #"DUAL-RTX3070-8G" 
+
 mainlog.info("nvscrape starting...")
 r = htmlRequest("https://www.nvidia.com/en-gb/shop/geforce/gpu/?page=1" +
                 "&limit=9&locale=en-gb&category=GPU&gpu=RTX%203070")
 soup = parse(r)
-rtx3070info = itemJson(getDiv(soup, "NVGFT070"))
+rtx3070info = itemJson(getDiv(soup, classname)) # "NVGFT070"))
+
+if not os.path.isfile(filename):
+    saveJson(filename, rtx3070info)
+    mainlog.info("Creating json file for reference")
 mainlog.info(f"Length of item(s) JSON: {len(rtx3070info)}")
-if rtx3070info:
-    mainlog.info("Field no longer empty")
+
+if not isMatch(filename, rtx3070info) and rtx3070info:
+    mainlog.info("Change detected")
     if not isinstance(rtx3070info, list):
         rtx3070info = [rtx3070info]
     links = []
@@ -92,3 +112,4 @@ if rtx3070info:
     sl.setBody(f"Change detected!\nTry these links: {linksStr}\nBonus: " +
                "https://secure.scan.co.uk/web/basket/addproduct/3236417")
     sl.send()
+    saveJson(filename, rtx3070info)
